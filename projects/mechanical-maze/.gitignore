@@ -1,0 +1,15 @@
+# Cocos Creator
+library/
+temp/
+local/
+build/
+settings/package.json
+project.*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

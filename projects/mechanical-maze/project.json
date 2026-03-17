@@ -1,0 +1,10 @@
+{
+  "name": "mechanical-maze",
+  "displayName": "机械迷城",
+  "version": "0.1.0",
+  "description": "简版手绘风机械迷城解谜微信小游戏",
+  "engine": "cocos-creator",
+  "engineVersion": "3.8.x",
+  "orientation": "landscape",
+  "author": "Lee"
+}
