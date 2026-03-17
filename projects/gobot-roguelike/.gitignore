@@ -1,0 +1,16 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+gobot-roguelike
+
+# Go workspace
+vendor/
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
