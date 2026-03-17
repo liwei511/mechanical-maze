@@ -1,0 +1,135 @@
+/* 机械迷城 首页样式 */
+.container {
+  width: 100vw;
+  height: 100vh;
+  background-color: #3a3228;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 开始屏幕 */
+.start-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #f0e6d6;
+}
+
+.title {
+  font-size: 64rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: #b89a6b;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  margin-bottom: 100rpx;
+  color: #8b6e4b;
+}
+
+.start-btn {
+  width: 300rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background-color: #8b6e4b;
+  color: #fff;
+  border-radius: 10rpx;
+  border: none;
+  font-size: 32rpx;
+}
+
+.hint {
+  margin-top: 30rpx;
+  font-size: 24rpx;
+  color: #6a8876;
+}
+
+/* 游戏画布 */
+.game-canvas {
+  width: 100%;
+  height: calc(100vh - 120rpx);
+}
+
+/* 底部UI */
+.bottom-ui {
+  width: 100%;
+  height: 120rpx;
+  background-color: rgba(45, 38, 30, 0.9);
+  display: flex;
+  align-items: center;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+}
+
+.inventory {
+  flex: 1;
+  display: flex;
+  gap: 10rpx;
+}
+
+.item {
+  width: 80rpx;
+  height: 80rpx;
+  background-color: #8b6e4b;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid transparent;
+  box-sizing: border-box;
+}
+
+.item.selected {
+  border-color: #ffcc66;
+}
+
+.item-img {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.hint-btn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: #8b6e4b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  padding: 0;
+  margin-left: 20rpx;
+  border: none;
+}
+
+/* 提示弹窗 */
+.hint-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.hint-content {
+  width: 80vw;
+  background-color: #5a4a3a;
+  padding: 40rpx;
+  border-radius: 16rpx;
+  border: 4rpx solid #8b6e4b;
+}
+
+.hint-text {
+  color: #f0e6d6;
+  font-size: 30rpx;
+  line-height: 1.6;
+}

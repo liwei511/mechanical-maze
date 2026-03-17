@@ -1,0 +1,39 @@
+<!-- 机械迷城 首页 -->
+<view class="container">
+  <!-- 开始界面 -->
+  <view class="start-screen" wx:if="{{!gameStarted}}">
+    <text class="title">机械迷城</text>
+    <text class="subtitle">简版手绘解谜</text>
+    <button class="start-btn" bindtap="startGame">开始游戏</button>
+    <text class="hint" wx:if="{{hasSave}}">继续上次进度</text>
+  </view>
+
+  <!-- 游戏画布 -->
+  <canvas 
+    canvas-id="gameCanvas" 
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    class="game-canvas"
+    wx:if="{{gameStarted}}"
+  ></canvas>
+
+  <!-- 底部UI：物品栏+提示 -->
+  <view class="bottom-ui" wx:if="{{gameStarted}}">
+    <view class="inventory">
+      <block wx:for="{{inventory}}" wx:key="*this">
+        <view class="item {{selectedItem === item.name ? 'selected' : ''}}" bindtap="selectItem" data-item="{{item.name}}">
+          <image class="item-img" src="{{item.icon}}"></image>
+        </view>
+      </block>
+    </view>
+    <button class="hint-btn" bindtap="showHint">💡</button>
+  </view>
+
+  <!-- 提示弹窗 -->
+  <view class="hint-modal" wx:if="{{showHintModal}}" bindtap="closeHint">
+    <view class="hint-content">
+      <text class="hint-text">{{currentHint}}</text>
+    </view>
+  </view>
+</view>
