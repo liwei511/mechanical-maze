@@ -1,8 +1,16 @@
 // 关卡4：时钟塔
 
+const Feedback = require('../Feedback');
+
 const ClockTowerScene = {
-  // 时钟指针角度（初始都指向0
+  // 时钟指针当前角度
   angles: {
+    hour: 0,
+    minute: 0,
+    second: 0
+  },
+  // 指针目标角度（用于缓动动画
+  targetAngles: {
     hour: 0,
     minute: 0,
     second: 0
@@ -20,6 +28,8 @@ const ClockTowerScene = {
 
   // 门状态
   doorOpen: false,
+  // 门动画进度 0=全关 1=全开
+  doorAnim: 0,
 
   // 初始化
   init() {
@@ -27,14 +37,41 @@ const ClockTowerScene = {
     this.angles.hour = 0;
     this.angles.minute = 0;
     this.angles.second = 0;
+    this.targetAngles.hour = 0;
+    this.targetAngles.minute = 0;
+    this.targetAngles.second = 0;
     this.doorOpen = false;
+    this.doorAnim = 0;
     this.selected = null;
     Player.x = 200;
     Player.y = 350;
   },
 
+  // 更新动画
+  update() {
+    // 缓动指针到目标角度
+    for (const key in this.angles) {
+      let diff = this.targetAngles[key] - this.angles[key];
+      // 处理跨360度的情况
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      this.angles[key] += diff * 0.2; // 0.2的缓动系数
+      this.angles[key] = (this.angles[key] + 360) % 360;
+    }
+
+    // 门动画
+    if (this.doorOpen && this.doorAnim < 1) {
+      this.doorAnim += 0.05;
+    } else if (!this.doorOpen && this.doorAnim > 0) {
+      this.doorAnim -= 0.05;
+    }
+    this.doorAnim = Math.max(0, Math.min(1, this.doorAnim));
+  },
+
   // 绘制场景
   draw(ctx, canvasWidth, canvasHeight) {
+    // 更新动画
+    this.update();
     // 背景塔身
     ctx.fillStyle = '#4a3f33';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -81,17 +118,18 @@ const ClockTowerScene = {
     ctx.fill();
 
     // 底部门
-    if (this.doorOpen) {
-      // 门开了
-      ctx.fillStyle = '#2d261e';
-      ctx.fillRect(centerX - 60, centerY + radius + 10, 120, 150);
-    } else {
-      // 门关着
+    const doorHeight = 150;
+    const openHeight = doorHeight * this.doorAnim; // 门打开的高度
+    // 门背景（门洞）
+    ctx.fillStyle = '#2d261e';
+    ctx.fillRect(centerX - 60, centerY + radius + 10, 120, doorHeight);
+    // 门本身，从下往上开
+    if (this.doorAnim < 1) {
       ctx.fillStyle = '#3a3228';
-      ctx.fillRect(centerX - 60, centerY + radius + 10, 120, 150);
+      ctx.fillRect(centerX - 60, centerY + radius + 10 + openHeight, 120, doorHeight - openHeight);
       ctx.strokeStyle = '#b89a6b';
       ctx.lineWidth = 3;
-      ctx.strokeRect(centerX - 60, centerY + radius + 10, 120, 150);
+      ctx.strokeRect(centerX - 60, centerY + radius + 10 + openHeight, 120, doorHeight - openHeight);
     }
   },
 
@@ -153,24 +191,25 @@ const ClockTowerScene = {
     if (!this.selected) return;
     // 拖拽左右旋转指针
     const delta = dx / 3; // 每像素拖动旋转几度
-    this.angles[this.selected] = (this.angles[this.selected] + delta + 360) % 360;
+    this.targetAngles[this.selected] = (this.targetAngles[this.selected] + delta + 360) % 360;
     // 检查是不是对了
     this.checkCode();
   },
 
   // 检查密码是否正确
-  checkCode() {
-    const tolerance = 5; // 5度容差
-    const hourDiff = Math.abs(this.angles.hour - this.correctAngles.hour);
-    const minuteDiff = Math.abs(this.angles.minute - this.correctAngles.minute);
-    const secondDiff = Math.abs(this.angles.second - this.correctAngles.second);
+    const tolerance = 3; // 3度容差，调小增加难度
+    const hourDiff = Math.abs(this.targetAngles.hour - this.correctAngles.hour);
+    const minuteDiff = Math.abs(this.targetAngles.minute - this.correctAngles.minute);
+    const secondDiff = Math.abs(this.targetAngles.second - this.correctAngles.second);
 
     if (hourDiff < tolerance && minuteDiff < tolerance && secondDiff < tolerance && !this.doorOpen) {
       this.doorOpen = true;
+      Feedback.success('时钟密码正确！门打开了');
+      wx.vibrateShort({ type: 'heavy' });
       console.log('密码正确！门开了');
       setTimeout(() => {
         getCurrentPage().onSceneChange('boiler');
-      }, 1500);
+      }, 2000);
     }
   },
 

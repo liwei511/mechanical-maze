@@ -1,11 +1,25 @@
 <!-- 机械迷城 首页 -->
 <view class="container">
   <!-- 开始界面 -->
-  <view class="start-screen" wx:if="{{!gameStarted}}">
+  <view class="start-screen" wx:if="{{!gameStarted && !showSaveSelect && !showSettings}}">
     <text class="title">机械迷城</text>
     <text class="subtitle">简版手绘解谜</text>
-    <button class="start-btn" bindtap="startGame">开始游戏</button>
-    <text class="hint" wx:if="{{hasSave}}">继续上次进度</text>
+    <button class="start-btn" bindtap="showSaveSelect">选择存档</button>
+    <button class="settings-btn" bindtap="showSettings">⚙️ 设置</button>
+  </view>
+
+  <!-- 存档选择界面 -->
+  <view class="save-select-screen" wx:if="{{!gameStarted && showSaveSelect}}">
+    <text class="save-title">选择存档位</text>
+    <view class="save-list">
+      <view class="save-item" wx:for="{{saves}}" wx:key="slot" bindtap="selectSave" data-slot="{{item.slot}}">
+        <text class="save-slot">存档 {{item.slot}}</text>
+        <text class="save-time">{{item.saveTime}}</text>
+        <text class="save-status" wx:if="{{item.exists}}">已有进度</text>
+        <text class="save-status new" wx:else>新游戏</text>
+      </view>
+    </view>
+    <button class="back-btn" bindtap="hideSaveSelect">返回</button>
   </view>
 
   <!-- 游戏画布 -->
@@ -18,7 +32,7 @@
     wx:if="{{gameStarted}}"
   ></canvas>
 
-  <!-- 底部UI：物品栏+提示 -->
+  <!-- 底部UI：物品栏+提示+存档 -->
   <view class="bottom-ui" wx:if="{{gameStarted}}">
     <view class="inventory">
       <block wx:for="{{inventory}}" wx:key="*this">
@@ -27,6 +41,7 @@
         </view>
       </block>
     </view>
+    <button class="save-btn" bindtap="manualSave">💾</button>
     <button class="hint-btn" bindtap="showHint">💡</button>
   </view>
 
@@ -34,6 +49,42 @@
   <view class="hint-modal" wx:if="{{showHintModal}}" bindtap="closeHint">
     <view class="hint-content">
       <text class="hint-text">{{currentHint}}</text>
+    </view>
+  </view>
+
+  <!-- 设置弹窗 -->
+  <view class="settings-modal" wx:if="{{showSettings}}" bindtap="hideSettings">
+    <view class="settings-content" catchtap="">
+      <text class="settings-title">设置</text>
+      
+      <view class="settings-item">
+        <text class="settings-label">背景音乐音量</text>
+        <view class="slider">
+          <view class="slider-track">
+            <view class="slider-fill" style="width: {{settings.bgmVolume * 100}}%"></view>
+          </view>
+          <view class="slider-thumb" style="left: {{settings.bgmVolume * 100 - 5}}%"></view>
+        </view>
+      </view>
+
+      <view class="settings-item">
+        <text class="settings-label">音效音量</text>
+        <view class="slider">
+          <view class="slider-track">
+            <view class="slider-fill" style="width: {{settings.sfxVolume * 100}}%"></view>
+          </view>
+          <view class="slider-thumb" style="left: {{settings.sfxVolume * 100 - 5}}%"></view>
+        </view>
+      </view>
+
+      <view class="settings-item">
+        <text class="settings-label">震动反馈</text>
+        <view class="toggle {{settings.vibration ? 'on' : 'off'}}" bindtap="toggleVibration">
+          <view class="toggle-thumb"></view>
+        </view>
+      </view>
+
+      <button class="settings-close" bindtap="hideSettings">关闭</button>
     </view>
   </view>
 </view>

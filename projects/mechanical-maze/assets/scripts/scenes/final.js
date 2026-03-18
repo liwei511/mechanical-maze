@@ -1,5 +1,7 @@
 // 关卡7：塔顶最终战 + 结局
 
+const Feedback = require('../Feedback');
+
 const FinalScene = {
   // Boss状态
   boss: {
@@ -29,12 +31,37 @@ const FinalScene = {
   // 游戏结束
   gameFinished: false,
 
+  // Credits滚动
+  credits: {
+    active: false,
+    offset: 0,
+    speed: 1,
+    list: [
+      '机械迷城 简版',
+      '',
+      '制作团队',
+      '策划：Lee',
+      '开发：OpenClaw AI',
+      '美术：手绘风格致敬原作',
+      '',
+      '特别感谢',
+      '原作《机械迷城》开发团队 Amanita Design',
+      '',
+      '感谢游玩 ❤️',
+      '',
+      '彩蛋：通关后回到首页',
+      '会解锁开发者彩蛋哦~'
+    ]
+  },
+
   // 初始化
   init() {
     console.log('最终关初始化');
     this.gunTaken = false;
     this.gameFinished = false;
     this.boss.alive = true;
+    this.credits.active = false;
+    this.credits.offset = 0;
     Player.x = 100;
     Player.y = 300;
   },
@@ -44,6 +71,32 @@ const FinalScene = {
     // 背景天空
     ctx.fillStyle = '#7a8899';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Credits滚动
+    if (this.credits.active) {
+      this.credits.offset += this.credits.speed;
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.font = '20px sans-serif';
+
+      this.credits.list.forEach((line, index) => {
+        const y = canvasHeight - this.credits.offset + index * 40;
+        if (y > 0 && y < canvasHeight) {
+          ctx.fillText(line, canvasWidth / 2, y);
+        }
+      });
+
+      // 滚动完回到首页
+      if (this.credits.offset > canvasHeight + this.credits.list.length * 40 + 100) {
+        // 标记通关状态
+        wx.setStorageSync('mechanical-maze-finished', true);
+        Feedback.success('恭喜通关！彩蛋已解锁');
+        setTimeout(() => {
+          getCurrentPage().setData({ gameStarted: false });
+        }, 2000);
+      }
+      return;
+    }
 
     // 远景城市剪影
     ctx.fillStyle = '#4a3f33';
@@ -188,7 +241,13 @@ const FinalScene = {
       this.gameFinished = true;
       Game.progress.gameFinished = true;
       Game.saveProgress();
+      Feedback.success('恭喜通关！');
+      wx.vibrateShort({ type: 'heavy' });
       console.log('恭喜！游戏通关了！');
+      // 3秒后显示credits
+      setTimeout(() => {
+        this.credits.active = true;
+      }, 3000);
       return true;
     }
     return false;
